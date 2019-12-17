@@ -13,4 +13,4 @@ void CounterPrepare(SDL_Renderer *renderer, int x, int y, char *text,
 #ifdef __cplusplus
 }
 #endif
-#endif /* DISPLAY_H_ */
+#endif
