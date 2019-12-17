@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
-  SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+  //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   if (argc == 1) {
     // The font is not part of the binary, so must point to a font on the system.
@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
   }
 
   LayoutRender(window, renderer, font_small);
-  CounterStart(renderer, font_medium);
+  CounterStart(window, renderer, font_small);
 
   quit = 0;
   while (!quit) {
@@ -73,8 +73,8 @@ int main(int argc, char **argv) {
       }
     }
 
-    CounterHandler(renderer, font_medium);
-    UdpHandler(renderer, font_small);
+    CounterHandler(window, renderer, font_small);
+    UdpHandler(renderer, font_small, font_medium);
 
     currentTime = SDL_GetTicks();
     if (currentTime > lastFrameTime + (1000 / 30)) {

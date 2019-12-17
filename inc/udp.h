@@ -12,7 +12,7 @@ extern "C" {
 #define MSGBUFSIZE 64
 
 void UdpInit();
-void UdpHandler(SDL_Renderer *renderer, TTF_Font *font);
+void UdpHandler(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium);
 void UdpRenderCopy(SDL_Renderer *renderer);
 void UdpQuit();
 

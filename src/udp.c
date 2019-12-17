@@ -1,6 +1,7 @@
 #define _GNU_SOURCE /* For struct ip_mreq */
 
 #include "udp.h"
+#include "payload.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -23,8 +24,8 @@ static uint8_t rx_buf[MSGBUFSIZE] = {0};
 
 static struct sockaddr_in addr;
 static int fd;
-static SDL_Rect rect;
-static SDL_Texture *texture;
+static SDL_Rect rect, rect2;
+static SDL_Texture *texture, *texture2;
 
 static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
@@ -33,7 +34,25 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
   SDL_Surface *surface;
   SDL_Color textColor = {55, 255, 55, 0};
 
-  surface = TTF_RenderText_Solid(font, text, textColor);
+  surface = TTF_RenderText_Blended(font, text, textColor);
+  *texture = SDL_CreateTextureFromSurface(renderer, surface);
+  text_width = surface->w;
+  text_height = surface->h;
+  SDL_FreeSurface(surface);
+  rect->x = x;
+  rect->y = y;
+  rect->w = text_width;
+  rect->h = text_height;
+}
+
+static void renderStats(SDL_Renderer *renderer, int x, int y, char *text,
+                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+  int text_width;
+  int text_height;
+  SDL_Surface *surface;
+  SDL_Color textColor = {55, 255, 255, 0};
+
+  surface = TTF_RenderText_Blended(font, text, textColor);
   *texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
   text_height = surface->h;
@@ -81,10 +100,11 @@ void UdpInit() {
   }
 }
 
-void UdpHandler(SDL_Renderer *renderer, TTF_Font *font) {
+void UdpHandler(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium) {
   int nbytes;
   socklen_t addrlen;
   addrlen = sizeof(addr);
+  PAYLOAD_sensor_t payload = {};
 
   if ((nbytes = recvfrom(fd, rx_buf, MSGBUFSIZE, MSG_DONTWAIT,
                           (struct sockaddr*)&addr, &addrlen)) > 0) {
@@ -95,14 +115,29 @@ void UdpHandler(SDL_Renderer *renderer, TTF_Font *font) {
         ptr += sprintf (ptr, "%02X ", rx_buf[i]);
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", udp_hex_buf);
-    prepareFrame(renderer, 10, 50, udp_hex_buf, font, &texture, &rect);
+
+    size_t len = sizeof(PAYLOAD_sensor_t);
+    uint8_t sbuf[len];
+    // Ignore the fist byte.
+    for (int i = 0; i < len; i++) {
+        sbuf[i] = rx_buf[i+1];
+    }
+    PAYLOAD_unserialize(&payload, sbuf);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Message id: %d\n", payload.message_id);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Batt: %d\n", payload.batt);
+    prepareFrame(renderer, 10, 50, udp_hex_buf, font_small, &texture, &rect);
+    char buf[64] = {0};
+    sprintf(buf, "Message id: %d Battery: %d", payload.message_id, payload.batt);
+    renderStats(renderer, 200, 10, buf, font_medium, &texture2, &rect2);
   }
 }
 
 void UdpRenderCopy(SDL_Renderer *renderer) {
   SDL_RenderCopy(renderer, texture, NULL, &rect);
+  SDL_RenderCopy(renderer, texture2, NULL, &rect2);
 }
 
 void UdpQuit() {
   SDL_DestroyTexture(texture);
+  SDL_DestroyTexture(texture2);
 }

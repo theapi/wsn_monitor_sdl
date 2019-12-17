@@ -4,31 +4,35 @@
 static SDL_Rect rect;
 static SDL_Texture *texture;
 
-static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
+static void prepareFrame(SDL_Window *window, SDL_Renderer *renderer, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
-  SDL_Color textColor = {55, 255, 55, 0};
+  SDL_Color textColor = {55, 55, 55, 0};
+
+    int window_width, window_height;
+
+  SDL_GetWindowSize(window, &window_width, &window_height);
 
   surface = TTF_RenderText_Solid(font, text, textColor);
   *texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
   text_height = surface->h;
   SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
+  rect->x = 10;
+  rect->y = window_height - 30;
   rect->w = text_width;
   rect->h = text_height;
 }
 
-void CounterStart(SDL_Renderer *renderer, TTF_Font *font) {
+void CounterStart(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
   char countbuf[64] = {0};
-  sprintf(countbuf, "Count: 0");
-  prepareFrame(renderer, 10, 10, countbuf, font, &texture, &rect);
+  sprintf(countbuf, "Seconds: 0");
+  prepareFrame(window, renderer, countbuf, font, &texture, &rect);
 }
 
-void CounterHandler(SDL_Renderer *renderer, TTF_Font *font) {
+void CounterHandler(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
   static uint32_t count = 0;
   static uint32_t lastTime = 0;
 
@@ -37,8 +41,8 @@ void CounterHandler(SDL_Renderer *renderer, TTF_Font *font) {
   if (currentTime > lastTime + 1000) {
     lastTime = currentTime;
     char countbuf[64] = {0};
-    sprintf(countbuf, "Count: %d", count++);
-    prepareFrame(renderer, 10, 10, countbuf, font, &texture, &rect);
+    sprintf(countbuf, "Seconds: %d", count++);
+    prepareFrame(window, renderer, countbuf, font, &texture, &rect);
   }
 }
 
