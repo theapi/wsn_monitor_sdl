@@ -1,39 +1,37 @@
-# A simple Makefile for compiling small SDL projects
-
-#B_DIR=build
+# Adapted from https://spin.atomicobject.com/2016/08/26/makefile-c-projects/
 
 # set the compiler
 CC := gcc
 
+TARGET_EXEC ?= monitor
+
+BUILD_DIR ?= build
+SRC_DIRS ?= src
+INC_DIRS ?= inc
+
+SRCS := $(shell find $(SRC_DIRS) -name *.c )
+OBJS := $(SRCS:%=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
+
+INC_FLAGS := $(addprefix -I,$(INC_DIRS))
+
 # set the compiler flags
-CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2_image -lm -lSDL2_ttf -I./inc
+CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c11 -Wall -lSDL2_image -lm -lSDL2_ttf
 
-# add header files here
-HDRS :=
+# c source
+$(BUILD_DIR)/%.c.o: %.c
+	$(MKDIR_P) $(dir $@)
+	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
 
-# add source files here
-SRCS := main.c \
-./src/counter.c
 
-# generate names of object files
-OBJS := $(SRCS:.c=.o)
+$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(CFLAGS)
 
-# name of executable
-EXEC := monitor
+.PHONY: clean
 
-# default recipe
-all: $(EXEC)
-
-# recipe for building the final executable
-$(EXEC): $(OBJS) $(HDRS) Makefile
-	$(CC) -o $@ $(OBJS) $(CFLAGS)
-
-# recipe for building object files
-#$(OBJS): $(@:.o=.c) $(HDRS) Makefile
-#	$(CC) -o $@ $(@:.o=.c) -c $(CFLAGS)
-
-# recipe to clean the workspace
 clean:
-	rm -f $(EXEC) $(OBJS) *.o
+	$(RM) -r $(BUILD_DIR)
 
-.PHONY: all clean
+-include $(DEPS)
+
+MKDIR_P ?= mkdir -p

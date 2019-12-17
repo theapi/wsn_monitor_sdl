@@ -155,7 +155,8 @@ int main(int argc, char **argv) {
   }
 
   if (argc == 1) {
-    font_path = "FreeMono.ttf";
+    // The font is not part of the binary, so must point to a font on the system.
+    font_path = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
   } else if (argc == 2) {
     // ./text /usr/share/fonts/truetype/freefont/FreeMonoOblique.ttf
     font_path = argv[1];
