@@ -1,6 +1,27 @@
 
 #include "counter.h"
 
+
+void CounterStart(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+  char countbuf[64] = {0};
+  sprintf(countbuf, "Count: 0");
+  CounterPrepare(renderer, 10, 10, countbuf, font, texture, rect);
+}
+
+void CounterHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+  static uint32_t count = 0;
+  static uint32_t lastTime = 0;
+
+  // Update once per second
+  uint32_t currentTime = SDL_GetTicks();
+  if (currentTime > lastTime + 1000) {
+    lastTime = currentTime;
+    char countbuf[64] = {0};
+    sprintf(countbuf, "Count: %d", count++);
+    CounterPrepare(renderer, 10, 10, countbuf, font, texture, rect);
+  }
+}
+
 void CounterPrepare(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
   int text_width;

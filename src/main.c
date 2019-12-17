@@ -32,7 +32,7 @@
 // char udp_hex_buf[(MSGBUFSIZE * 3) + 1] = {0};
 
 // uint8_t rx_buf[MSGBUFSIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
-char countbuf[MSGBUFSIZE] = {0};
+// char countbuf[MSGBUFSIZE] = {0};
 
 /*
 - x, y: upper left corner.
@@ -66,8 +66,8 @@ int main(int argc, char **argv) {
   int quit;
   int window_width, window_height;
 
-  uint32_t count = 0;
-  uint32_t lastTime = 0;
+  // uint32_t count = 0;
+  // uint32_t lastTime = 0;
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
@@ -104,8 +104,7 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  sprintf(countbuf, "Count: %d", count++);
-  CounterPrepare(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
+  CounterStart(renderer, font_medium, &texture1, &rect1);
 
   SDL_GetWindowSize(window, &window_width, &window_height);
   get_text_and_rect(renderer, window_width - 145, window_height - 30,
@@ -129,19 +128,12 @@ int main(int argc, char **argv) {
       }
     }
 
+    CounterHandler(renderer, font_medium, &texture1, &rect1);
     UdpHandler(renderer, font_small, &texture3, &rect3);
 
-    // Update once per second
     currentTime = SDL_GetTicks();
-    if (currentTime > lastTime + 1000) {
-      lastTime = currentTime;
-      sprintf(countbuf, "Count: %d", count++);
-      CounterPrepare(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
-    }
-
     if (currentTime > lastFrameTime + (1000 / 30)) {
       lastFrameTime = currentTime;
-
 
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
       SDL_RenderClear(renderer);
@@ -159,6 +151,7 @@ int main(int argc, char **argv) {
   /* Deinit TTF. */
   SDL_DestroyTexture(texture1);
   SDL_DestroyTexture(texture2);
+  SDL_DestroyTexture(texture3);
   TTF_Quit();
 
   SDL_DestroyRenderer(renderer);
