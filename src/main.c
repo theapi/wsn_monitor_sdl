@@ -1,14 +1,4 @@
 
-//#define _GNU_SOURCE /* For struct ip_mreq */
-
-// #include <arpa/inet.h>
-// #include <netinet/in.h>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-// #include <sys/socket.h>
-
-
 #include <stdlib.h>
 
 #include <SDL2/SDL.h>
@@ -20,42 +10,6 @@
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 400
-
-// #define SERVER_PORT 12345
-// #define SERVER_GROUP "239.0.0.58"
-#define MSGBUFSIZE 64
-
-// /*
-// Glabal as this size is too big for the stack.
-// see https://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
-// Probably time for malloc.
-// */
-// char udp_hex_buf[(MSGBUFSIZE * 3) + 1] = {0};
-
-// uint8_t rx_buf[MSGBUFSIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
-// char countbuf[MSGBUFSIZE] = {0};
-
-// /*
-// - x, y: upper left corner.
-// - texture, rect: outputs.
-// */
-// void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
-//                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
-//   int text_width;
-//   int text_height;
-//   SDL_Surface *surface;
-//   SDL_Color textColor = {55, 55, 55, 0};
-
-//   surface = TTF_RenderText_Solid(font, text, textColor);
-//   *texture = SDL_CreateTextureFromSurface(renderer, surface);
-//   text_width = surface->w;
-//   text_height = surface->h;
-//   SDL_FreeSurface(surface);
-//   rect->x = x;
-//   rect->y = y;
-//   rect->w = text_width;
-//   rect->h = text_height;
-// }
 
 int main(int argc, char **argv) {
   SDL_Event event;
