@@ -14,6 +14,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "counter.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 400
 
@@ -53,23 +55,23 @@ void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
   rect->h = text_height;
 }
 
-void DisplayPrepareCounter(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
-  int text_width;
-  int text_height;
-  SDL_Surface *surface;
-  SDL_Color textColor = {55, 255, 55, 0};
+// void DisplayPrepareCounter(SDL_Renderer *renderer, int x, int y, char *text,
+//                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+//   int text_width;
+//   int text_height;
+//   SDL_Surface *surface;
+//   SDL_Color textColor = {55, 255, 55, 0};
 
-  surface = TTF_RenderText_Solid(font, text, textColor);
-  *texture = SDL_CreateTextureFromSurface(renderer, surface);
-  text_width = surface->w;
-  text_height = surface->h;
-  SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
-  rect->w = text_width;
-  rect->h = text_height;
-}
+//   surface = TTF_RenderText_Solid(font, text, textColor);
+//   *texture = SDL_CreateTextureFromSurface(renderer, surface);
+//   text_width = surface->w;
+//   text_height = surface->h;
+//   SDL_FreeSurface(surface);
+//   rect->x = x;
+//   rect->y = y;
+//   rect->w = text_width;
+//   rect->h = text_height;
+// }
 
 void DisplayPrepareUdpBuffer(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
@@ -182,7 +184,7 @@ int main(int argc, char **argv) {
   }
 
   sprintf(countbuf, "Count: %d", count++);
-  DisplayPrepareCounter(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
+  CounterPrepare(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
 
   SDL_GetWindowSize(window, &window_width, &window_height);
   get_text_and_rect(renderer, window_width - 145, window_height - 30,
@@ -227,7 +229,7 @@ int main(int argc, char **argv) {
     if (currentTime > lastTime + 1000) {
       lastTime = currentTime;
       sprintf(countbuf, "Count: %d", count++);
-      DisplayPrepareCounter(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
+      CounterPrepare(renderer, 10, 10, countbuf, font_medium, &texture1, &rect1);
     }
 
     if (currentTime > lastFrameTime + (1000 / 30)) {
