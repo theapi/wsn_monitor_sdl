@@ -9,8 +9,6 @@ extern "C" {
 
 void CounterStart(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
 void CounterHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
-void CounterPrepare(SDL_Renderer *renderer, int x, int y, char *text,
-                    TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
 
 #ifdef __cplusplus
 }

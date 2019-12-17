@@ -24,7 +24,7 @@ static uint8_t rx_buf[MSGBUFSIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 static struct sockaddr_in addr;
 static int fd;
 
-static void prepareBuffer(SDL_Renderer *renderer, int x, int y, char *text,
+static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
   int text_width;
   int text_height;
@@ -93,6 +93,6 @@ void UdpHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, S
         ptr += sprintf (ptr, "%02X ", rx_buf[i]);
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", udp_hex_buf);
-    prepareBuffer(renderer, 10, 50, udp_hex_buf, font, texture, rect);
+    prepareFrame(renderer, 10, 50, udp_hex_buf, font, texture, rect);
   }
 }

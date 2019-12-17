@@ -14,6 +14,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include "layout.h"
 #include "counter.h"
 #include "udp.h"
 
@@ -34,27 +35,27 @@
 // uint8_t rx_buf[MSGBUFSIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
 // char countbuf[MSGBUFSIZE] = {0};
 
-/*
-- x, y: upper left corner.
-- texture, rect: outputs.
-*/
-void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
-  int text_width;
-  int text_height;
-  SDL_Surface *surface;
-  SDL_Color textColor = {55, 55, 55, 0};
+// /*
+// - x, y: upper left corner.
+// - texture, rect: outputs.
+// */
+// void get_text_and_rect(SDL_Renderer *renderer, int x, int y, char *text,
+//                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+//   int text_width;
+//   int text_height;
+//   SDL_Surface *surface;
+//   SDL_Color textColor = {55, 55, 55, 0};
 
-  surface = TTF_RenderText_Solid(font, text, textColor);
-  *texture = SDL_CreateTextureFromSurface(renderer, surface);
-  text_width = surface->w;
-  text_height = surface->h;
-  SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
-  rect->w = text_width;
-  rect->h = text_height;
-}
+//   surface = TTF_RenderText_Solid(font, text, textColor);
+//   *texture = SDL_CreateTextureFromSurface(renderer, surface);
+//   text_width = surface->w;
+//   text_height = surface->h;
+//   SDL_FreeSurface(surface);
+//   rect->x = x;
+//   rect->y = y;
+//   rect->w = text_width;
+//   rect->h = text_height;
+// }
 
 int main(int argc, char **argv) {
   SDL_Event event;
@@ -64,10 +65,6 @@ int main(int argc, char **argv) {
   SDL_Window *window;
   char *font_path;
   int quit;
-  int window_width, window_height;
-
-  // uint32_t count = 0;
-  // uint32_t lastTime = 0;
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
@@ -104,11 +101,8 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
+  LayoutDraw(window, renderer, font_small, &texture2, &rect2);
   CounterStart(renderer, font_medium, &texture1, &rect1);
-
-  SDL_GetWindowSize(window, &window_width, &window_height);
-  get_text_and_rect(renderer, window_width - 145, window_height - 30,
-                    "Proof of concept", font_small, &texture2, &rect2);
 
   quit = 0;
   while (!quit) {
@@ -121,8 +115,7 @@ int main(int argc, char **argv) {
         switch (event.window.event) {
           case SDL_WINDOWEVENT_SIZE_CHANGED:
             // Keep the bottom left text in postition.
-            get_text_and_rect(renderer, event.window.data1 - 145, event.window.data2 - 30,
-                              "Proof of concept", font_small, &texture2, &rect2);
+            LayoutDraw(window, renderer, font_small, &texture2, &rect2);
             break;
         }
       }
@@ -145,10 +138,10 @@ int main(int argc, char **argv) {
     }
 
     // Don't hog the cpu, this isn't embedded.
-    SDL_Delay(20);
+    SDL_Delay(10);
   }
 
-  /* Deinit TTF. */
+  /* Deinit */
   SDL_DestroyTexture(texture1);
   SDL_DestroyTexture(texture2);
   SDL_DestroyTexture(texture3);
