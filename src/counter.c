@@ -1,6 +1,9 @@
 
 #include "counter.h"
 
+static SDL_Rect rect;
+static SDL_Texture *texture;
+
 static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
   int text_width;
@@ -19,13 +22,13 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
   rect->h = text_height;
 }
 
-void CounterStart(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+void CounterStart(SDL_Renderer *renderer, TTF_Font *font) {
   char countbuf[64] = {0};
   sprintf(countbuf, "Count: 0");
-  prepareFrame(renderer, 10, 10, countbuf, font, texture, rect);
+  prepareFrame(renderer, 10, 10, countbuf, font, &texture, &rect);
 }
 
-void CounterHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+void CounterHandler(SDL_Renderer *renderer, TTF_Font *font) {
   static uint32_t count = 0;
   static uint32_t lastTime = 0;
 
@@ -35,6 +38,14 @@ void CounterHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **textur
     lastTime = currentTime;
     char countbuf[64] = {0};
     sprintf(countbuf, "Count: %d", count++);
-    prepareFrame(renderer, 10, 10, countbuf, font, texture, rect);
+    prepareFrame(renderer, 10, 10, countbuf, font, &texture, &rect);
   }
+}
+
+void CounterRenderCopy(SDL_Renderer *renderer) {
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+void CounterQuit() {
+  SDL_DestroyTexture(texture);
 }

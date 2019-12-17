@@ -1,6 +1,9 @@
 
 #include "layout.h"
 
+static SDL_Rect rect;
+static SDL_Texture *texture;
+
 /*
 - x, y: upper left corner.
 - texture, rect: outputs.
@@ -23,11 +26,19 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
   rect->h = text_height;
 }
 
-void LayoutDraw(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font,
-                SDL_Texture **texture, SDL_Rect *rect) {
+void LayoutRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
   int window_width, window_height;
 
   SDL_GetWindowSize(window, &window_width, &window_height);
   prepareFrame(renderer, window_width - 145, window_height - 30, "Proof of concept",
-          font, texture, rect);
+          font, &texture, &rect);
+
+}
+
+void LayoutRenderCopy(SDL_Renderer *renderer) {
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+void LayoutQuit() {
+  SDL_DestroyTexture(texture);
 }

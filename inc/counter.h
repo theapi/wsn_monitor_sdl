@@ -7,8 +7,10 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-void CounterStart(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
-void CounterHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
+void CounterStart(SDL_Renderer *renderer, TTF_Font *font);
+void CounterHandler(SDL_Renderer *renderer, TTF_Font *font);
+void CounterRenderCopy(SDL_Renderer *renderer);
+void CounterQuit();
 
 #ifdef __cplusplus
 }

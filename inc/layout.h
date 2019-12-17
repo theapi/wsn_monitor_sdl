@@ -7,7 +7,9 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-void LayoutDraw(SDL_Window * window, SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect);
+void LayoutRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font);
+void LayoutRenderCopy(SDL_Renderer *renderer);
+void LayoutQuit();
 
 #ifdef __cplusplus
 }

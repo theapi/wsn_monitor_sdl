@@ -19,10 +19,12 @@ Probably time for malloc.
 */
 static char udp_hex_buf[(MSGBUFSIZE * 3) + 1] = {0};
 
-static uint8_t rx_buf[MSGBUFSIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14};
+static uint8_t rx_buf[MSGBUFSIZE] = {0};
 
 static struct sockaddr_in addr;
 static int fd;
+static SDL_Rect rect;
+static SDL_Texture *texture;
 
 static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
                        TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
@@ -79,7 +81,7 @@ void UdpInit() {
   }
 }
 
-void UdpHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+void UdpHandler(SDL_Renderer *renderer, TTF_Font *font) {
   int nbytes;
   socklen_t addrlen;
   addrlen = sizeof(addr);
@@ -93,6 +95,14 @@ void UdpHandler(SDL_Renderer *renderer, TTF_Font *font, SDL_Texture **texture, S
         ptr += sprintf (ptr, "%02X ", rx_buf[i]);
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", udp_hex_buf);
-    prepareFrame(renderer, 10, 50, udp_hex_buf, font, texture, rect);
+    prepareFrame(renderer, 10, 50, udp_hex_buf, font, &texture, &rect);
   }
+}
+
+void UdpRenderCopy(SDL_Renderer *renderer) {
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+}
+
+void UdpQuit() {
+  SDL_DestroyTexture(texture);
 }

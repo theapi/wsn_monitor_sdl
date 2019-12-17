@@ -13,9 +13,7 @@
 
 int main(int argc, char **argv) {
   SDL_Event event;
-  SDL_Rect rect1, rect2, rect3;
   SDL_Renderer *renderer;
-  SDL_Texture *texture1, *texture2, *texture3;
   SDL_Window *window;
   char *font_path;
   int quit;
@@ -55,8 +53,8 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  LayoutDraw(window, renderer, font_small, &texture2, &rect2);
-  CounterStart(renderer, font_medium, &texture1, &rect1);
+  LayoutRender(window, renderer, font_small);
+  CounterStart(renderer, font_medium);
 
   quit = 0;
   while (!quit) {
@@ -69,14 +67,14 @@ int main(int argc, char **argv) {
         switch (event.window.event) {
           case SDL_WINDOWEVENT_SIZE_CHANGED:
             // Keep the bottom left text in postition.
-            LayoutDraw(window, renderer, font_small, &texture2, &rect2);
+            LayoutRender(window, renderer, font_small);
             break;
         }
       }
     }
 
-    CounterHandler(renderer, font_medium, &texture1, &rect1);
-    UdpHandler(renderer, font_small, &texture3, &rect3);
+    CounterHandler(renderer, font_medium);
+    UdpHandler(renderer, font_small);
 
     currentTime = SDL_GetTicks();
     if (currentTime > lastFrameTime + (1000 / 30)) {
@@ -85,9 +83,9 @@ int main(int argc, char **argv) {
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
       SDL_RenderClear(renderer);
       /* Use textures. */
-      SDL_RenderCopy(renderer, texture1, NULL, &rect1);
-      SDL_RenderCopy(renderer, texture2, NULL, &rect2);
-      SDL_RenderCopy(renderer, texture3, NULL, &rect3);
+      CounterRenderCopy(renderer);
+      LayoutRenderCopy(renderer);
+      UdpRenderCopy(renderer);
       SDL_RenderPresent(renderer);
     }
 
@@ -96,9 +94,9 @@ int main(int argc, char **argv) {
   }
 
   /* Deinit */
-  SDL_DestroyTexture(texture1);
-  SDL_DestroyTexture(texture2);
-  SDL_DestroyTexture(texture3);
+  CounterQuit();
+  LayoutQuit();
+  UdpQuit();
   TTF_Quit();
 
   SDL_DestroyRenderer(renderer);
