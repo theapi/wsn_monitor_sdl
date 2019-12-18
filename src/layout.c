@@ -1,29 +1,32 @@
 
 #include "layout.h"
 
-static SDL_Rect rect;
-static SDL_Texture *texture;
 
 /*
 - x, y: upper left corner.
 - texture, rect: outputs.
 */
 static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+                       TTF_Font *font) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
   SDL_Color textColor = {55, 55, 55, 0};
+  SDL_Rect rect;
+  SDL_Texture *texture;
 
   surface = TTF_RenderText_Solid(font, text, textColor);
-  *texture = SDL_CreateTextureFromSurface(renderer, surface);
+  texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
   text_height = surface->h;
   SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
-  rect->w = text_width;
-  rect->h = text_height;
+  rect.x = x;
+  rect.y = y;
+  rect.w = text_width;
+  rect.h = text_height;
+
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+  SDL_DestroyTexture(texture);
 }
 
 void LayoutRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
@@ -31,14 +34,7 @@ void LayoutRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
 
   SDL_GetWindowSize(window, &window_width, &window_height);
   prepareFrame(renderer, window_width - 145, window_height - 30, "Proof of concept",
-          font, &texture, &rect);
+          font);
 
 }
 
-void LayoutRenderCopy(SDL_Renderer *renderer) {
-  SDL_RenderCopy(renderer, texture, NULL, &rect);
-}
-
-void LayoutQuit() {
-  SDL_DestroyTexture(texture);
-}

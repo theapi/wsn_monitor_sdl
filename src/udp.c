@@ -18,49 +18,57 @@ Glabal as this size is too big for the stack.
 see https://stackoverflow.com/questions/1847789/segmentation-fault-on-large-array-sizes
 Probably time for malloc.
 */
-static char udp_hex_buf[(MSGBUFSIZE * 3) + 1] = {0};
-
+static char udp_hex_buf[(MSGBUFSIZE * 3) + 1] = "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --";
+static char stats_buffer[64] = "Message id:   Battery:  ";
 static uint8_t rx_buf[MSGBUFSIZE] = {0};
 
 static struct sockaddr_in addr;
 static int fd;
-static SDL_Rect rect, rect2;
-static SDL_Texture *texture, *texture2;
 
-static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+static void renderHex(SDL_Renderer *renderer, int x, int y, char *text,
+                       TTF_Font *font) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
   SDL_Color textColor = {55, 255, 55, 0};
+  SDL_Rect rect;
+  SDL_Texture *texture;
 
   surface = TTF_RenderText_Blended(font, text, textColor);
-  *texture = SDL_CreateTextureFromSurface(renderer, surface);
+  texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
   text_height = surface->h;
   SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
-  rect->w = text_width;
-  rect->h = text_height;
+  rect.x = x;
+  rect.y = y;
+  rect.w = text_width;
+  rect.h = text_height;
+
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+  SDL_DestroyTexture(texture);
 }
 
 static void renderStats(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font, SDL_Texture **texture, SDL_Rect *rect) {
+                       TTF_Font *font) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
   SDL_Color textColor = {55, 255, 255, 0};
+  SDL_Rect rect;
+  SDL_Texture *texture;
 
   surface = TTF_RenderText_Blended(font, text, textColor);
-  *texture = SDL_CreateTextureFromSurface(renderer, surface);
+  texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
   text_height = surface->h;
   SDL_FreeSurface(surface);
-  rect->x = x;
-  rect->y = y;
-  rect->w = text_width;
-  rect->h = text_height;
+  rect.x = x;
+  rect.y = y;
+  rect.w = text_width;
+  rect.h = text_height;
+
+  SDL_RenderCopy(renderer, texture, NULL, &rect);
+  SDL_DestroyTexture(texture);
 }
 
 void UdpInit() {
@@ -100,7 +108,7 @@ void UdpInit() {
   }
 }
 
-void UdpHandler(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium) {
+void UdpListen() {
   int nbytes;
   socklen_t addrlen;
   addrlen = sizeof(addr);
@@ -116,6 +124,7 @@ void UdpHandler(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_med
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", udp_hex_buf);
 
+    /* Unserialize the payload. */
     size_t len = sizeof(PAYLOAD_sensor_t);
     uint8_t sbuf[len];
     // Ignore the fist byte.
@@ -125,19 +134,11 @@ void UdpHandler(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_med
     PAYLOAD_unserialize(&payload, sbuf);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Message id: %d\n", payload.message_id);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Batt: %d\n", payload.batt);
-    prepareFrame(renderer, 10, 50, udp_hex_buf, font_small, &texture, &rect);
-    char buf[64] = {0};
-    sprintf(buf, "Message id: %d Battery: %d", payload.message_id, payload.batt);
-    renderStats(renderer, 200, 10, buf, font_medium, &texture2, &rect2);
+    sprintf(stats_buffer, "Message id: %d Battery: %d", payload.message_id, payload.batt);
   }
 }
 
-void UdpRenderCopy(SDL_Renderer *renderer) {
-  SDL_RenderCopy(renderer, texture, NULL, &rect);
-  SDL_RenderCopy(renderer, texture2, NULL, &rect2);
-}
-
-void UdpQuit() {
-  SDL_DestroyTexture(texture);
-  SDL_DestroyTexture(texture2);
+void UdpRender(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium) {
+  renderStats(renderer, 200, 10, stats_buffer, font_medium);
+  renderHex(renderer, 10, 50, udp_hex_buf, font_small);
 }

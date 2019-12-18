@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
-  //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+  SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   if (argc == 1) {
     // The font is not part of the binary, so must point to a font on the system.
@@ -53,40 +53,30 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  LayoutRender(window, renderer, font_small);
-  CounterStart(window, renderer, font_small);
-
   quit = 0;
   while (!quit) {
     while (SDL_PollEvent(&event) == 1) {
       if (event.type == SDL_QUIT) {
         quit = 1;
       }
-
-      if (event.type == SDL_WINDOWEVENT) {
-        switch (event.window.event) {
-          case SDL_WINDOWEVENT_SIZE_CHANGED:
-            // Keep the bottom left text in postition.
-            LayoutRender(window, renderer, font_small);
-            break;
-        }
-      }
     }
 
-    CounterHandler(window, renderer, font_small);
-    UdpHandler(renderer, font_small, font_medium);
+    // Check for UDP messages as often as possible.
+    UdpListen();
 
     currentTime = SDL_GetTicks();
     if (currentTime > lastFrameTime + (1000 / 30)) {
       lastFrameTime = currentTime;
 
+      LayoutRender(window, renderer, font_small);
+      CounterRender(window, renderer, font_small);
+      UdpRender(renderer, font_small, font_medium);
+
+      SDL_RenderPresent(renderer);
+
+      /* Prepare the back buffer for the next frame. */
       SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
       SDL_RenderClear(renderer);
-      /* Use textures. */
-      CounterRenderCopy(renderer);
-      LayoutRenderCopy(renderer);
-      UdpRenderCopy(renderer);
-      SDL_RenderPresent(renderer);
     }
 
     // Don't hog the cpu, this isn't embedded.
@@ -94,9 +84,6 @@ int main(int argc, char **argv) {
   }
 
   /* Deinit */
-  CounterQuit();
-  LayoutQuit();
-  UdpQuit();
   TTF_Quit();
 
   SDL_DestroyRenderer(renderer);
