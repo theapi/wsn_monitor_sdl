@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
-  SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+  //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   if (argc == 1) {
     // The font is not part of the binary, so must point to a font on the system.
