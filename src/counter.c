@@ -1,8 +1,8 @@
 
 #include "counter.h"
+#include "font.h"
 
-static void render(SDL_Window *window, SDL_Renderer *renderer, char *text,
-                       TTF_Font *font) {
+static void render(SDL_Window *window, SDL_Renderer *renderer, char *text) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
@@ -13,6 +13,7 @@ static void render(SDL_Window *window, SDL_Renderer *renderer, char *text,
 
   SDL_GetWindowSize(window, &window_width, &window_height);
 
+  TTF_Font *font = FontMain(14);
   surface = TTF_RenderText_Solid(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -27,7 +28,7 @@ static void render(SDL_Window *window, SDL_Renderer *renderer, char *text,
   SDL_DestroyTexture(texture);
 }
 
-void CounterRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
+void CounterRender(SDL_Window *window, SDL_Renderer *renderer) {
   static uint32_t count = 0;
   static uint32_t lastTime = 0;
   char countbuf[64] = {0};
@@ -39,5 +40,5 @@ void CounterRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
     count++;
   }
   sprintf(countbuf, "Seconds: %d", count);
-  render(window, renderer, countbuf, font);
+  render(window, renderer, countbuf);
 }

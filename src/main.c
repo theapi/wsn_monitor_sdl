@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 
+#include "font.h"
 #include "layout.h"
 #include "counter.h"
 #include "udp.h"
@@ -15,43 +15,19 @@ int main(int argc, char **argv) {
   SDL_Event event;
   SDL_Renderer *renderer;
   SDL_Window *window;
-  char *font_path;
   int quit;
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
   //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
-  if (argc == 1) {
-    // The font is not part of the binary, so must point to a font on the system.
-    font_path = "/usr/share/fonts/truetype/freefont/FreeMono.ttf";
-  } else if (argc == 2) {
-    // ./monitor /usr/share/fonts/truetype/freefont/FreeMonoOblique.ttf
-    font_path = argv[1];
-  } else {
-    fprintf(stderr, "error: too many arguments\n");
-    exit(EXIT_FAILURE);
-  }
-
   UdpInit();
+  FontInit();
 
   SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window,
                               &renderer);
   SDL_SetWindowTitle(window, "UDP Payload Monitor");
-
-  /* Inint TTF. */
-  TTF_Init();
-  TTF_Font *font_medium = TTF_OpenFont(font_path, 24);
-  if (font_medium == NULL) {
-    fprintf(stderr, "error: font not found\n");
-    exit(EXIT_FAILURE);
-  }
-  TTF_Font *font_small = TTF_OpenFont(font_path, 14);
-  if (font_small == NULL) {
-    fprintf(stderr, "error: font not found\n");
-    exit(EXIT_FAILURE);
-  }
 
   quit = 0;
   while (!quit) {
@@ -68,9 +44,9 @@ int main(int argc, char **argv) {
     if (currentTime > lastFrameTime + (1000 / 30)) {
       lastFrameTime = currentTime;
 
-      LayoutRender(window, renderer, font_small);
-      CounterRender(window, renderer, font_small);
-      UdpRender(renderer, font_small, font_medium);
+      LayoutRender(window, renderer);
+      CounterRender(window, renderer);
+      UdpRender(window, renderer);
 
       SDL_RenderPresent(renderer);
 

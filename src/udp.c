@@ -2,6 +2,7 @@
 
 #include "udp.h"
 #include "payload.h"
+#include "font.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -76,8 +77,7 @@ static void sensorClear(uint8_t num) {
 
 }
 
-static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor,
-                       TTF_Font *font) {
+static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
@@ -88,6 +88,7 @@ static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t 
   // Move down for each sensor.
   y = y + sensor * 60;
 
+  TTF_Font *font = FontMain(14);
   surface = TTF_RenderText_Blended(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -102,8 +103,7 @@ static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t 
   SDL_DestroyTexture(texture);
 }
 
-static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor,
-                       TTF_Font *font) {
+static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
@@ -114,6 +114,7 @@ static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_
   // Move down for each sensor.
   y = y + sensor * 60;
 
+  TTF_Font *font = FontMain(24);
   surface = TTF_RenderText_Blended(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -208,15 +209,15 @@ void UdpListen() {
   }
 }
 
-void UdpRender(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium) {
+void UdpRender(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
     // If longer than the delay time clear the led for that sensor.
     if (now - sensors_last[i] > (sensors_delay[i] + UDP_DELAY_EXTRA) * 1000) {
       sensorClear(i);
     } else {
-      renderStats(renderer, 200, 10, stats_buffer[i], i, font_medium);
-      renderHex(renderer, 10, 50, udp_hex_buf[i], i, font_small);
+      renderStats(renderer, 200, 10, stats_buffer[i], i);
+      renderHex(renderer, 10, 50, udp_hex_buf[i], i);
     }
   }
 }

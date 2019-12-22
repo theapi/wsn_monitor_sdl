@@ -15,7 +15,7 @@ extern "C" {
 
 void UdpInit();
 void UdpListen();
-void UdpRender(SDL_Renderer *renderer, TTF_Font *font_small, TTF_Font *font_medium);
+void UdpRender(SDL_Window *window, SDL_Renderer *renderer);
 
 #ifdef __cplusplus
 }

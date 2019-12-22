@@ -1,13 +1,12 @@
 
 #include "layout.h"
-
+#include "font.h"
 
 /*
 - x, y: upper left corner.
 - texture, rect: outputs.
 */
-static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
-                       TTF_Font *font) {
+static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text) {
   int text_width;
   int text_height;
   SDL_Surface *surface;
@@ -15,6 +14,7 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
   SDL_Rect rect;
   SDL_Texture *texture;
 
+  TTF_Font *font = FontMain(14);
   surface = TTF_RenderText_Solid(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -29,12 +29,10 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text,
   SDL_DestroyTexture(texture);
 }
 
-void LayoutRender(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font) {
+void LayoutRender(SDL_Window *window, SDL_Renderer *renderer) {
   int window_width, window_height;
 
   SDL_GetWindowSize(window, &window_width, &window_height);
-  prepareFrame(renderer, window_width - 145, window_height - 30, "Proof of concept",
-          font);
-
+  prepareFrame(renderer, window_width - 145, window_height - 30, "Proof of concept");
 }
 
