@@ -13,7 +13,7 @@ static void render(SDL_Window *window, SDL_Renderer *renderer, char *text) {
 
   SDL_GetWindowSize(window, &window_width, &window_height);
 
-  TTF_Font *font = FontMain(14);
+  TTF_Font *font = FontGet(FONT_MAIN, 14);
   surface = TTF_RenderText_Solid(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;

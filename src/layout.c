@@ -14,7 +14,7 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text) {
   SDL_Rect rect;
   SDL_Texture *texture;
 
-  TTF_Font *font = FontMain(14);
+  TTF_Font *font = FontGet(FONT_MAIN, 14);
   surface = TTF_RenderText_Solid(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;

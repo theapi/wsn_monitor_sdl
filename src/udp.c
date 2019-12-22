@@ -20,7 +20,7 @@ see https://stackoverflow.com/questions/1847789/segmentation-fault-on-large-arra
 Probably time for malloc.
 */
 static char udp_hex_buf[UDP_NUM_SENSORS][(UDP_MSGBUFSIZE * 3) + 1] = {"-- ", "-- ", "-- "};
-static char stats_buffer[UDP_NUM_SENSORS][64] = {"Message id:   Battery:  ", " - ", " - "};
+static char stats_buffer[UDP_NUM_SENSORS][64] = {" - ", " - ", " - "};
 static uint8_t rx_buf[UDP_MSGBUFSIZE] = {0};
 
 static struct sockaddr_in addr;
@@ -88,7 +88,7 @@ static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t 
   // Move down for each sensor.
   y = y + sensor * 60;
 
-  TTF_Font *font = FontMain(14);
+  TTF_Font *font = FontGet(FONT_MAIN, 14);
   surface = TTF_RenderText_Blended(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -114,7 +114,7 @@ static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_
   // Move down for each sensor.
   y = y + sensor * 60;
 
-  TTF_Font *font = FontMain(24);
+  TTF_Font *font = FontGet(FONT_HEAD, 24);
   surface = TTF_RenderText_Blended(font, text, textColor);
   texture = SDL_CreateTextureFromSurface(renderer, surface);
   text_width = surface->w;
@@ -205,7 +205,7 @@ void UdpListen() {
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s\n", udp_hex_buf[sensor]);
 
-    sprintf(stats_buffer[sensor], "Message id: %d Battery: %d", payload.message_id, payload.batt);
+    sprintf(stats_buffer[sensor], "Message id: %d    Battery: %d", payload.message_id, payload.batt);
   }
 }
 
