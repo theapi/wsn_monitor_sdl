@@ -8,6 +8,7 @@ extern "C" {
 
 /* The font is not part of the binary, so must point to a font on the system. */
 #define FONT_MAIN "/usr/share/fonts/truetype/freefont/FreeMono.ttf"
+#define FONT_MAIN_NUM_SIZES 8
 
 void FontInit();
 TTF_Font * FontMain(int ptsize);

@@ -3,22 +3,25 @@
 
 #include <SDL2/SDL_ttf.h>
 
-#define FONT_MAIN_NUM_SIZES 8
+/* The internal font loader struct. */
+typedef struct {
+  uint8_t ptsize;
+  TTF_Font *font;
+} FontLoader_t;
 
-static TTF_Font * font_main[FONT_MAIN_NUM_SIZES];
-static int8_t font_main_sizes[FONT_MAIN_NUM_SIZES];
+static FontLoader_t font_main[FONT_MAIN_NUM_SIZES] = {0};
 
 static int8_t fontIndex(int ptsize) {
   // Look for the font size in the index.
   for (uint8_t i = 0; i < FONT_MAIN_NUM_SIZES; i++) {
-    if (font_main_sizes[i] == ptsize) {
+    if (font_main[i].ptsize == ptsize) {
       return i;
     }
   }
   // Add the new size to the index.
   for (uint8_t i = 0; i < FONT_MAIN_NUM_SIZES; i++) {
-    if (font_main_sizes[i] == 0) {
-      font_main_sizes[i] = ptsize;
+    if (font_main[i].ptsize == 0) {
+      font_main[i].ptsize = ptsize;
       return i;
     }
   }
@@ -32,8 +35,8 @@ void FontInit() {
 
 TTF_Font * FontMain(int ptsize) {
   int8_t index = fontIndex(ptsize);
-  if (font_main[index] != NULL) {
-    return font_main[index];
+  if (font_main[index].font != NULL) {
+    return font_main[index].font;
   }
   TTF_Font *font = TTF_OpenFont(FONT_MAIN, ptsize);
   if (font == NULL) {
@@ -41,6 +44,6 @@ TTF_Font * FontMain(int ptsize) {
     exit(EXIT_FAILURE);
   }
 
-  font_main[index] = font;
+  font_main[index].font = font;
   return font;
 }
