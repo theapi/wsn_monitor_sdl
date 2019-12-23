@@ -10,7 +10,7 @@ extern "C" {
 #define UDP_SERVER_PORT 12345
 #define UDP_SERVER_GROUP "239.0.0.58"
 #define UDP_MSGBUFSIZE 64
-#define UDP_NUM_SENSORS 3
+#define UDP_NUM_SENSORS 5
 #define UDP_DELAY_EXTRA 5 // Number of seconds extra to wait to hear from the sensor again.
 
 void UdpInit();

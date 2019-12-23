@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
-  //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+  SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   UdpInit();
   FontInit();
