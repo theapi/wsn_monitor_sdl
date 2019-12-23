@@ -59,9 +59,8 @@ int main(int argc, char **argv) {
     SDL_Delay(10);
   }
 
-  /* Deinit */
-  TTF_Quit();
-
+  /* Clean up */
+  FontQuit();
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();

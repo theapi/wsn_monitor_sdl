@@ -1,10 +1,16 @@
 # Adapted from https://spin.atomicobject.com/2016/08/26/makefile-c-projects/
 
+#PREFIX is environment variable, but if it is not set, then set default value
+ifeq ($(PREFIX),)
+    PREFIX := /usr/local
+endif
+
 # set the compiler
-CC := gcc
+CC := cc
 
 TARGET_EXEC ?= monitor
 
+BIN_DIR ?= bin
 BUILD_DIR ?= build
 SRC_DIRS ?= src
 INC_DIRS ?= inc
@@ -24,13 +30,24 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(CC) $(CFLAGS) $(INC_FLAGS) -c $< -o $@
 
 
-$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
+$(BIN_DIR)/$(TARGET_EXEC): $(OBJS)
+	$(MKDIR_P) $(dir $@)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS) $(CFLAGS)
 
-.PHONY: clean
+.PHONY: clean install uninstall
 
 clean:
-	$(RM) -r $(BUILD_DIR)
+	$(RM) -r $(BUILD_DIR) $(BIN_DIR)
+
+install:
+	@echo "Installing to: "$(DESTDIR)$(PREFIX)/wsn_monitor
+	mkdir -p $(DESTDIR)$(PREFIX)/wsn_monitor/bin
+	cp bin/monitor $(DESTDIR)$(PREFIX)/wsn_monitor/bin/monitor
+	cp -R resources $(DESTDIR)$(PREFIX)/wsn_monitor/resources
+
+uninstall:
+	@echo "Unstalling from: "$(DESTDIR)$(PREFIX)/wsn_monitor
+	rm -fr $(DESTDIR)$(PREFIX)/wsn_monitor
 
 -include $(DEPS)
 
