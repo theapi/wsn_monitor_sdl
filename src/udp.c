@@ -56,11 +56,10 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
   // Not seen before, so add it to the array.
   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
     if (sensors[i].payload.mac[0] == 0) {
-      sensors[i].payload = *payload;
-      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Added: %d - %02X %02X %02X %02X %02X %02X", i,
-               sensors[i].payload.mac[0], sensors[i].payload.mac[1],
-               sensors[i].payload.mac[2], sensors[i].payload.mac[3],
-               sensors[i].payload.mac[4], sensors[i].payload.mac[5]);
+      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Adding: %d - %02X %02X %02X %02X %02X %02X", i,
+               payload->mac[0], payload->mac[1],
+               payload->mac[2], payload->mac[3],
+               payload->mac[4], payload->mac[5]);
       return i;
     }
   }
@@ -68,8 +67,8 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
   return -1;
 }
 
-static void sensorClear(uint8_t num) {
-
+static void sensorIgnore(uint8_t num) {
+  sensors[num].hex[0] = 0;
 }
 
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
@@ -189,6 +188,13 @@ void UdpListen() {
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Sensor num: %d\n", num);
 
+    // Check for new message or just a repeat of the last
+    if (sensors[num].payload.message_id == payload.message_id) {
+      // Same message so nothing to do.
+      return;
+    }
+    sensors[num].payload = payload;
+
     // Remember when we last heard from this sensor.
     int32_t now = SDL_GetTicks();
     sensors[num].last = now;
@@ -223,8 +229,8 @@ void UdpRender(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
     // If longer than the delay time clear the led for that sensor.
-    if (now - sensors[i].last > (sensors[i].last + UDP_DELAY_EXTRA) * 1000) {
-      sensorClear(i);
+    if (now - sensors[i].last > (sensors[i].last + UDP_DELAY_EXTRA)) {
+      sensorIgnore(i);
     } else {
       if (sensors[i].hex[0] != 0) {
         renderStats(renderer, 10, 10, sensors[i].stats, i);
