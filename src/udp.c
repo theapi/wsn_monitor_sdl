@@ -229,7 +229,7 @@ void UdpRender(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
     // If longer than the delay time clear the led for that sensor.
-    if (now - sensors[i].last > (sensors[i].last + UDP_DELAY_EXTRA)) {
+    if (now - sensors[i].last > (sensors[i].payload.delay + UDP_DELAY_EXTRA) * 1000) {
       sensorIgnore(i);
     } else {
       if (sensors[i].hex[0] != 0) {
