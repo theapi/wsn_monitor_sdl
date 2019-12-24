@@ -36,6 +36,8 @@ $(BIN_DIR)/$(TARGET_EXEC): $(OBJS)
 
 .PHONY: clean install uninstall
 
+all: $(BIN_DIR)/$(TARGET_EXEC)
+
 clean:
 	$(RM) -r $(BUILD_DIR) $(BIN_DIR)
 
