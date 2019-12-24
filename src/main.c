@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
   SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window,
                               &renderer);
   SDL_SetWindowTitle(window, "UDP Payload Monitor");
+  SDL_SetWindowPosition(window, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED);
 
   quit = 0;
   while (!quit) {
