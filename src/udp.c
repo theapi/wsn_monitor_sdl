@@ -213,11 +213,11 @@ void UdpListen() {
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensors[num].hex);
 
     sprintf(sensors[num].stats,
-            "Sensor: %02X %02X %02X %02X %02X %02X\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
+            "Sensor: %02X %02X %02X %02X %02X %02X    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
             sensors[num].payload.mac[0], sensors[num].payload.mac[1],
             sensors[num].payload.mac[2], sensors[num].payload.mac[3],
             sensors[num].payload.mac[4], sensors[num].payload.mac[5],
-            sensors[num].payload.message_id, sensors[num].payload.batt,
+            sensors[num].payload.delay, sensors[num].payload.message_id, sensors[num].payload.batt,
             sensors[num].payload.adc[0], sensors[num].payload.adc[1], sensors[num].payload.adc[2],
             sensors[num].payload.adc[3], sensors[num].payload.adc[4], sensors[num].payload.adc[5],
             sensors[num].payload.adc[6]);
