@@ -168,18 +168,16 @@ void UdpListen() {
 
   if ((nbytes = recvfrom(fd, rx_buf, UDP_MSGBUFSIZE, MSG_DONTWAIT,
                           (struct sockaddr*)&addr, &addrlen)) > 0) {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Received %d bytes: ", nbytes);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Received %d bytes", nbytes);
 
     /* Unserialize the payload. */
     size_t len = sizeof(PAYLOAD_sensor_t);
     uint8_t sbuf[len];
-    // Ignore the fist byte.
     for (int i = 0; i < len; i++) {
-        sbuf[i] = rx_buf[i+1];
+        sbuf[i] = rx_buf[i];
     }
     PAYLOAD_unserialize(&payload, sbuf);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Message id: %d\n", payload.message_id);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Batt: %d\n", payload.batt);
 
     int8_t num = sensorNum(&payload);
     if (num == -1) {
@@ -211,13 +209,13 @@ void UdpListen() {
 
     }
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensors[num].hex);
-
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensors[num].payload.crc);
     sprintf(sensors[num].stats,
-            "Sensor: %02X %02X %02X %02X %02X %02X    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
+            "Sensor: %02X %02X %02X %02X %02X %02X    Payload type: %d    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
             sensors[num].payload.mac[0], sensors[num].payload.mac[1],
             sensors[num].payload.mac[2], sensors[num].payload.mac[3],
             sensors[num].payload.mac[4], sensors[num].payload.mac[5],
-            sensors[num].payload.delay, sensors[num].payload.message_id, sensors[num].payload.batt,
+            sensors[num].payload.payload_type, sensors[num].payload.delay, sensors[num].payload.message_id, sensors[num].payload.batt,
             sensors[num].payload.adc[0], sensors[num].payload.adc[1], sensors[num].payload.adc[2],
             sensors[num].payload.adc[3], sensors[num].payload.adc[4], sensors[num].payload.adc[5],
             sensors[num].payload.adc[6]);
