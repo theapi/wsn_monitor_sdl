@@ -78,3 +78,30 @@ void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
     }
   }
 }
+
+void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_t *sensor) {
+      /* pointer to the first item (0 index) of the output array */
+    char *ptr = &sensor->hex[0];
+    for (int i = 0; i < size; i++) {
+        if (i > 0 && i%16 == 0) {
+          ptr += sprintf(ptr, "\n");
+        } else if (i > 0 && i%8 == 0) {
+          ptr += sprintf(ptr, "  ");
+        }
+        ptr += sprintf(ptr, "%02X ", raw[i]);
+
+    }
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "MsgId: %d\n", sensor->payload.message_id);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensor->hex);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensor->payload.crc);
+      sprintf(sensor->stats,
+            "Sensor: %02X %02X %02X %02X %02X %02X    Payload type: %d    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
+            sensor->payload.mac[0], sensor->payload.mac[1],
+            sensor->payload.mac[2], sensor->payload.mac[3],
+            sensor->payload.mac[4], sensor->payload.mac[5],
+            sensor->payload.payload_type, sensor->payload.delay, sensor->payload.message_id, sensor->payload.batt,
+            sensor->payload.adc[0], sensor->payload.adc[1], sensor->payload.adc[2],
+            sensor->payload.adc[3], sensor->payload.adc[4], sensor->payload.adc[5],
+            sensor->payload.adc[6]);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Stats: %s\n", sensor->stats);
+}

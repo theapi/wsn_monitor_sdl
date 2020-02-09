@@ -2,6 +2,7 @@
 //#include <string.h>
 
 #include "sensor.h"
+#include "render/sensors.h"
 
 static Sensor_t sensors[SENSOR_NUM] = {};
 
@@ -101,6 +102,9 @@ Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned
     icons.level[i - 1] = waterLevel(payload.adc[i]);
   }
   sensors[num].icons = icons;
+
+  // Allow the renderer to also populate the sensor.
+  SensorRenderPopulate(raw, size, &sensors[num]);
 
   return &sensors[num];
 }
