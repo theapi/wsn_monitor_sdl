@@ -4,12 +4,13 @@
 extern "C" {
 #endif
 
-#include "payload.h"
-#include "udp.h"
-
 #define SENSOR_NUM 4
 #define SENSOR_LEVELS 6 // number of water levels
 #define SENSOR_BUFFER_SIZE 64
+
+
+#include "payload.h"
+
 
 /* How to show the payload icons */
 typedef struct {
@@ -28,8 +29,8 @@ typedef struct {
   uint8_t visible;
   SensorIcons_t icons;
 
-  char hex[(UDP_MSGBUFSIZE * 3) + 1]; /* Large enough for the string version of the payload. */
-  char stats[1024];
+  // char hex[(UDP_MSGBUFSIZE * 3) + 1]; /* Large enough for the string version of the payload. */
+  // char stats[1024];
 } Sensor_t;
 
 Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned long now);

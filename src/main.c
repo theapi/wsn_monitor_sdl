@@ -3,11 +3,13 @@
 
 #include <SDL2/SDL.h>
 
+
+#include "render/sensors.h"
 #include "font.h"
 #include "layout.h"
 #include "counter.h"
 #include "udp.h"
-#include "render/sensors.h"
+
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 400

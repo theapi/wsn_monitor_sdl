@@ -7,9 +7,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-static void sensorIgnore(Sensor_t *sensor) {
-  sensor->hex[0] = 0;
-}
+static SensorsRender_data_t sensorsData[SENSOR_NUM] = {};
 
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
   int text_width;
@@ -69,19 +67,22 @@ void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
     Sensor_t *sensor = SensorGetByNumber(i);
     // If longer than the delay time clear the led for that sensor.
     if (now - sensor->last > (sensor->payload.delay + UDP_DELAY_EXTRA) * 1000) {
-      sensorIgnore(sensor);
+      sensor->visible = 0;
     } else {
-      if (sensor->hex[0] != 0) {
-        renderStats(renderer, 10, 10, sensor->stats, i);
-        renderHex(renderer, 10, 50, sensor->hex, i);
+      if (sensor->visible == 1) {
+        // BUG sensorsData[i].hex only renders full string when fresh.
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "RENDER hex: %s\n", sensorsData[i].hex);
+        renderStats(renderer, 10, 10, sensorsData[i].stats, i);
+        renderHex(renderer, 10, 50, sensorsData[i].hex, i);
       }
     }
   }
 }
 
 void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_t *sensor) {
-      /* pointer to the first item (0 index) of the output array */
-    char *ptr = &sensor->hex[0];
+
+    /* pointer to the first item (0 index) of the output array */
+    char *ptr = &sensorsData[sensor->num].hex[0];
     for (int i = 0; i < size; i++) {
         if (i > 0 && i%16 == 0) {
           ptr += sprintf(ptr, "\n");
@@ -91,10 +92,11 @@ void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_
         ptr += sprintf(ptr, "%02X ", raw[i]);
 
     }
+
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "MsgId: %d\n", sensor->payload.message_id);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensor->hex);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensorsData[sensor->num].hex);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensor->payload.crc);
-      sprintf(sensor->stats,
+      sprintf(sensorsData[sensor->num].stats,
             "Sensor: %02X %02X %02X %02X %02X %02X    Payload type: %d    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
             sensor->payload.mac[0], sensor->payload.mac[1],
             sensor->payload.mac[2], sensor->payload.mac[3],
@@ -103,5 +105,5 @@ void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_
             sensor->payload.adc[0], sensor->payload.adc[1], sensor->payload.adc[2],
             sensor->payload.adc[3], sensor->payload.adc[4], sensor->payload.adc[5],
             sensor->payload.adc[6]);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Stats: %s\n", sensor->stats);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Stats: %s\n", sensorsData[sensor->num].stats);
 }

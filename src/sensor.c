@@ -1,8 +1,9 @@
 
 //#include <string.h>
 
-#include "sensor.h"
 #include "render/sensors.h"
+#include "sensor.h"
+
 
 static Sensor_t sensors[SENSOR_NUM] = {};
 
