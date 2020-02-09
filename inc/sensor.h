@@ -32,10 +32,10 @@ typedef struct {
   char stats[1024];
 } Sensor_t;
 
-Sensor_t SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned long now);
-Sensor_t SensorGetByNumber(uint8_t num);
-//void SensorSetByNumber(uint8_t num, Sensor_t sensor);
-void SensorSetVisible(uint8_t num, uint8_t visible);
+Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned long now);
+Sensor_t* SensorGetByNumber(uint8_t num);
+
+//void SensorSetVisible(uint8_t num, uint8_t visible);
 
 #ifdef __cplusplus
 }

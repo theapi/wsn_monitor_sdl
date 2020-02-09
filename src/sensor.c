@@ -72,7 +72,7 @@ static uint8_t waterLevel(uint16_t val) {
   return 5;
 }
 
-Sensor_t SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned long now) {
+Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned long now) {
   PAYLOAD_sensor_t payload = {0};
   PAYLOAD_unserialize(&payload, raw);
 
@@ -102,17 +102,13 @@ Sensor_t SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned 
   }
   sensors[num].icons = icons;
 
-  return sensors[num];
+  return &sensors[num];
 }
 
-// void SensorSetByNumber(uint8_t num, Sensor_t sensor) {
-//   sensors[num] = sensor;
+Sensor_t* SensorGetByNumber(uint8_t num) {
+  return &sensors[num];
+}
+
+// void SensorSetVisible(uint8_t num, uint8_t visible) {
+//    sensors[num].visible = visible;
 // }
-
-Sensor_t SensorGetByNumber(uint8_t num) {
-  return sensors[num];
-}
-
-void SensorSetVisible(uint8_t num, uint8_t visible) {
-   sensors[num].visible = visible;
-}
