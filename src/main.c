@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
     }
 
     // Don't hog the cpu, this isn't embedded.
-    SDL_Delay(10);
+    SDL_Delay(30);
   }
 
   /* Clean up */

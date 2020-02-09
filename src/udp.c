@@ -3,6 +3,7 @@
 #include "udp.h"
 #include "payload.h"
 #include "font.h"
+#include "sensor.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -20,15 +21,15 @@ static uint8_t rx_buf[UDP_MSGBUFSIZE] = {0};
 static struct sockaddr_in addr;
 static int fd;
 
-/* The internal sensor struct. */
-typedef struct {
-  PAYLOAD_sensor_t payload;
-  char hex[(UDP_MSGBUFSIZE * 3) + 1]; /* Large enough for the string version of the payload. */
-  char stats[1024];
-  int32_t last;
-} Sensor_t;
+// /* The internal sensor struct. */
+// typedef struct {
+//   PAYLOAD_sensor_t payload;
+//   char hex[(UDP_MSGBUFSIZE * 3) + 1]; /* Large enough for the string version of the payload. */
+//   char stats[1024];
+//   int32_t last;
+// } Sensor_t;
 
-static Sensor_t sensors[UDP_NUM_SENSORS] = {0};
+// static Sensor_t sensors[UDP_NUM_SENSORS] = {0};
 
 /**
  * Compares mac addresses.
@@ -37,38 +38,38 @@ static Sensor_t sensors[UDP_NUM_SENSORS] = {0};
  * see https://www.gnu.org/software/libc/manual/html_node/Comparison-Functions.html
  *
  */
-static int8_t compareMacs(uint8_t a[6], uint8_t b[6]) {
-  for (int i = 0; i < 6; i++) {
-    if (a[i] != b[i]) {
-      return 1;
-    }
-  }
-  return 0;
-}
+// static int8_t compareMacs(uint8_t a[6], uint8_t b[6]) {
+//   for (int i = 0; i < 6; i++) {
+//     if (a[i] != b[i]) {
+//       return 1;
+//     }
+//   }
+//   return 0;
+// }
 
-static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
-  for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
-    if (compareMacs(sensors[i].payload.mac, payload->mac) == 0) {
-      return i;
-    }
-  }
+// static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
+//   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
+//     if (compareMacs(sensors[i].payload.mac, payload->mac) == 0) {
+//       return i;
+//     }
+//   }
 
-  // Not seen before, so add it to the array.
-  for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
-    if (sensors[i].payload.mac[0] == 0) {
-      SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Adding: %d - %02X %02X %02X %02X %02X %02X", i,
-               payload->mac[0], payload->mac[1],
-               payload->mac[2], payload->mac[3],
-               payload->mac[4], payload->mac[5]);
-      return i;
-    }
-  }
+//   // Not seen before.
+//   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
+//     if (sensors[i].payload.mac[0] == 0) {
+//       SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "New sensor: %d - %02X %02X %02X %02X %02X %02X", i,
+//                payload->mac[0], payload->mac[1],
+//                payload->mac[2], payload->mac[3],
+//                payload->mac[4], payload->mac[5]);
+//       return i;
+//     }
+//   }
 
-  return -1;
-}
+//   return -1;
+// }
 
-static void sensorIgnore(uint8_t num) {
-  sensors[num].hex[0] = 0;
+static void sensorIgnore(Sensor_t sensor) {
+  sensor.hex[0] = 0;
 }
 
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
@@ -164,41 +165,42 @@ void UdpListen() {
   int nbytes;
   socklen_t addrlen;
   addrlen = sizeof(addr);
-  PAYLOAD_sensor_t payload = {};
 
   if ((nbytes = recvfrom(fd, rx_buf, UDP_MSGBUFSIZE, MSG_DONTWAIT,
                           (struct sockaddr*)&addr, &addrlen)) > 0) {
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Received %d bytes", nbytes);
 
-    /* Unserialize the payload. */
-    size_t len = sizeof(PAYLOAD_sensor_t);
-    uint8_t sbuf[len];
-    for (int i = 0; i < len; i++) {
-        sbuf[i] = rx_buf[i];
-    }
-    PAYLOAD_unserialize(&payload, sbuf);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Message id: %d\n", payload.message_id);
+    Sensor_t sensor = SensorPopulate((uint8_t*) rx_buf, nbytes, SDL_GetTicks());
 
-    int8_t num = sensorNum(&payload);
-    if (num == -1) {
-      // Couldn't assign an led to the sensor.
-      num = 0; // Override the first one for now.
-    }
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Sensor num: %d\n", num);
+    // /* Unserialize the payload. */
+    // size_t len = sizeof(PAYLOAD_sensor_t);
+    // uint8_t sbuf[len];
+    // for (int i = 0; i < len; i++) {
+    //     sbuf[i] = rx_buf[i];
+    // }
+    // PAYLOAD_unserialize(&payload, sbuf);
+    // SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Message id: %d\n", payload.message_id);
 
-    // Check for new message or just a repeat of the last
-    if (sensors[num].payload.message_id == payload.message_id) {
-      // Same message so nothing to do.
-      return;
-    }
-    sensors[num].payload = payload;
+    // int8_t num = sensorNum(&payload);
+    // if (num == -1) {
+    //   // Couldn't assign an led to the sensor.
+    //   num = 0; // Override the first one for now.
+    // }
+    // SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Sensor num: %d\n", num);
 
-    // Remember when we last heard from this sensor.
-    int32_t now = SDL_GetTicks();
-    sensors[num].last = now;
+    // // Check for new message or just a repeat of the last
+    // if (sensors[num].payload.message_id == payload.message_id) {
+    //   // Same message so nothing to do.
+    //   return;
+    // }
+    // sensors[num].payload = payload;
+
+    // // Remember when we last heard from this sensor.
+    // int32_t now = SDL_GetTicks();
+    // sensors[num].last = now;
 
     /* pointer to the first item (0 index) of the output array */
-    char *ptr = &sensors[num].hex[0];
+    char *ptr = &sensor.hex[0];
     for (int i = 0; i < nbytes; i++) {
         if (i > 0 && i%16 == 0) {
           ptr += sprintf(ptr, "\n");
@@ -208,31 +210,34 @@ void UdpListen() {
         ptr += sprintf(ptr, "%02X ", rx_buf[i]);
 
     }
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensors[num].hex);
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensors[num].payload.crc);
-    sprintf(sensors[num].stats,
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensor.hex);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensor.payload.crc);
+    sprintf(sensor.stats,
             "Sensor: %02X %02X %02X %02X %02X %02X    Payload type: %d    Interval: %d\nMessage id: %d   Battery: %d  ADC: %d, %d, %d, %d, %d, %d, %d",
-            sensors[num].payload.mac[0], sensors[num].payload.mac[1],
-            sensors[num].payload.mac[2], sensors[num].payload.mac[3],
-            sensors[num].payload.mac[4], sensors[num].payload.mac[5],
-            sensors[num].payload.payload_type, sensors[num].payload.delay, sensors[num].payload.message_id, sensors[num].payload.batt,
-            sensors[num].payload.adc[0], sensors[num].payload.adc[1], sensors[num].payload.adc[2],
-            sensors[num].payload.adc[3], sensors[num].payload.adc[4], sensors[num].payload.adc[5],
-            sensors[num].payload.adc[6]);
-    //SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Stats: %s\n", sensors[num].stats);
+            sensor.payload.mac[0], sensor.payload.mac[1],
+            sensor.payload.mac[2], sensor.payload.mac[3],
+            sensor.payload.mac[4], sensor.payload.mac[5],
+            sensor.payload.payload_type, sensor.payload.delay, sensor.payload.message_id, sensor.payload.batt,
+            sensor.payload.adc[0], sensor.payload.adc[1], sensor.payload.adc[2],
+            sensor.payload.adc[3], sensor.payload.adc[4], sensor.payload.adc[5],
+            sensor.payload.adc[6]);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Stats: %s\n", sensor.stats);
+    // SensorSetByNumber(sensor.num, sensor);
   }
 }
+
 
 void UdpRender(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
   for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
+    Sensor_t sensor = SensorGetByNumber(i);
     // If longer than the delay time clear the led for that sensor.
-    if (now - sensors[i].last > (sensors[i].payload.delay + UDP_DELAY_EXTRA) * 1000) {
-      sensorIgnore(i);
+    if (now - sensor.last > (sensor.payload.delay + UDP_DELAY_EXTRA) * 1000) {
+      sensorIgnore(sensor);
     } else {
-      if (sensors[i].hex[0] != 0) {
-        renderStats(renderer, 10, 10, sensors[i].stats, i);
-        renderHex(renderer, 10, 50, sensors[i].hex, i);
+      if (sensor.hex[0] != 0) {
+        renderStats(renderer, 10, 10, sensor.stats, i);
+        renderHex(renderer, 10, 50, sensor.hex, i);
       }
     }
   }
