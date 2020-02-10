@@ -10,13 +10,13 @@
 static SensorsRender_data_t sensorsData[SENSOR_NUM];
 
 void SensorsRenderInit() {
-  uint8_t size = 10;
-  for (uint8_t i = 0; i < SENSOR_NUM; i++) {
-    char *ptr = &sensorsData[i].hex[0];
-    for (int x = 0; x < size; x++) {
-        ptr += sprintf(ptr, "%02X ", x);
-    }
-  }
+  // uint8_t size = 10;
+  // for (uint8_t i = 0; i < SENSOR_NUM; i++) {
+  //   char *ptr = &sensorsData[i].hex[0];
+  //   for (int x = 0; x < size; x++) {
+  //       ptr += sprintf(ptr, "%02X ", x);
+  //   }
+  // }
 }
 
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
@@ -80,9 +80,6 @@ void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
       sensor->visible = 0;
     } else {
       if (sensor->visible == 1) {
-        // BUG sensorsData[i].hex only renders full string when fresh.
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "RENDER hex: %s\n", sensorsData[i].hex);
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Sensor Num: %d\n", sensor->num);
         renderStats(renderer, 10, 10, sensorsData[i].stats, i);
         renderHex(renderer, 10, 50, sensorsData[i].hex, i);
       }
@@ -104,7 +101,7 @@ void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_
 
     }
 
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "MsgId: %d\n", sensor->payload.message_id);
+    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "NUM: %d\n", sensor->num);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "HEX: %s\n", sensorsData[sensor->num].hex);
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "CRC: %d\n", sensor->payload.crc);
       sprintf(sensorsData[sensor->num].stats,
