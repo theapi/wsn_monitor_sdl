@@ -26,6 +26,7 @@ int main(int argc, char **argv) {
 
   UdpInit();
   FontInit();
+  SensorsRenderInit();
 
   SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window,

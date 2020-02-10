@@ -7,7 +7,17 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-static SensorsRender_data_t sensorsData[SENSOR_NUM] = {};
+static SensorsRender_data_t sensorsData[SENSOR_NUM];
+
+void SensorsRenderInit() {
+  uint8_t size = 10;
+  for (uint8_t i = 0; i < SENSOR_NUM; i++) {
+    char *ptr = &sensorsData[i].hex[0];
+    for (int x = 0; x < size; x++) {
+        ptr += sprintf(ptr, "%02X ", x);
+    }
+  }
+}
 
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
   int text_width;
@@ -63,7 +73,7 @@ static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_
 
 void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
-  for (uint8_t i = 0; i < UDP_NUM_SENSORS; i++) {
+  for (uint8_t i = 0; i < SENSOR_NUM; i++) {
     Sensor_t *sensor = SensorGetByNumber(i);
     // If longer than the delay time clear the led for that sensor.
     if (now - sensor->last > (sensor->payload.delay + UDP_DELAY_EXTRA) * 1000) {
@@ -72,6 +82,7 @@ void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
       if (sensor->visible == 1) {
         // BUG sensorsData[i].hex only renders full string when fresh.
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "RENDER hex: %s\n", sensorsData[i].hex);
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Sensor Num: %d\n", sensor->num);
         renderStats(renderer, 10, 10, sensorsData[i].stats, i);
         renderHex(renderer, 10, 50, sensorsData[i].hex, i);
       }

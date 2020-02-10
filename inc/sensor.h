@@ -4,7 +4,7 @@
 extern "C" {
 #endif
 
-#define SENSOR_NUM 4
+#define SENSOR_NUM 6
 #define SENSOR_LEVELS 6 // number of water levels
 #define SENSOR_BUFFER_SIZE 64
 
