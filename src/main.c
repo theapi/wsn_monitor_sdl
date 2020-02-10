@@ -3,10 +3,13 @@
 
 #include <SDL2/SDL.h>
 
+
+#include "render/sensors.h"
 #include "font.h"
 #include "layout.h"
 #include "counter.h"
 #include "udp.h"
+
 
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 400
@@ -19,10 +22,11 @@ int main(int argc, char **argv) {
   uint32_t currentTime = 0;
   uint32_t lastFrameTime = 0;
 
-  SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
+  //SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_DEBUG);
 
   UdpInit();
   FontInit();
+  SensorsRenderInit();
 
   SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO);
   SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window,
@@ -47,7 +51,7 @@ int main(int argc, char **argv) {
 
       LayoutRender(window, renderer);
       CounterRender(window, renderer);
-      UdpRender(window, renderer);
+      SensorsRender(window, renderer);
 
       SDL_RenderPresent(renderer);
 
@@ -57,7 +61,7 @@ int main(int argc, char **argv) {
     }
 
     // Don't hog the cpu, this isn't embedded.
-    SDL_Delay(10);
+    SDL_Delay(30);
   }
 
   /* Clean up */
