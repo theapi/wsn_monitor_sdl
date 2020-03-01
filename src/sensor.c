@@ -92,6 +92,7 @@ Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned
   sensors[num].visible = 1;
   if (sensors[num].payload.message_id != sensors[num].previous.message_id) {
     sensors[num].last = now;
+    SDL_Log("new mesgid timestamp: %lu", now);
   }
 
   SensorIcons_t icons = {0};
