@@ -8,6 +8,7 @@ extern "C" {
 #include <SDL2/SDL_ttf.h>
 
 void CounterRender(SDL_Window *window, SDL_Renderer *renderer);
+void CounterReset();
 
 #ifdef __cplusplus
 }

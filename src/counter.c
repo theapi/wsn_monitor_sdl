@@ -2,6 +2,14 @@
 #include "counter.h"
 #include "font.h"
 
+static uint32_t count = 0;
+static uint32_t lastTime = 0;
+
+void CounterReset() {
+  count = 0;
+  lastTime = 0;
+}
+
 static void render(SDL_Window *window, SDL_Renderer *renderer, char *text) {
   int text_width;
   int text_height;
@@ -29,8 +37,8 @@ static void render(SDL_Window *window, SDL_Renderer *renderer, char *text) {
 }
 
 void CounterRender(SDL_Window *window, SDL_Renderer *renderer) {
-  static uint32_t count = 0;
-  static uint32_t lastTime = 0;
+  //static uint32_t count = 0;
+  //static uint32_t lastTime = 0;
   char countbuf[64] = {0};
 
   // Update once per second

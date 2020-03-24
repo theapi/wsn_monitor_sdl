@@ -3,7 +3,7 @@
 
 #include "render/sensors.h"
 #include "sensor.h"
-
+#include "counter.h"
 
 static Sensor_t sensors[SENSOR_NUM] = {};
 
@@ -92,6 +92,8 @@ Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned
   sensors[num].visible = 1;
   if (sensors[num].payload.message_id != sensors[num].previous.message_id) {
     sensors[num].last = now;
+    // Reset the timer (temp as multiple sensors will have different times)
+    CounterReset();
     SDL_Log("new mesgid timestamp: %lu", now);
   }
 
