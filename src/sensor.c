@@ -108,7 +108,7 @@ Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned
   sensors[num].icons = icons;
 
   // Allow the renderer to also populate the sensor.
-  SensorRenderPopulate(raw, size, &sensors[num]);
+  RenderSensorsPopulate(raw, size, &sensors[num]);
 
   return &sensors[num];
 }

@@ -9,7 +9,7 @@
 
 static SensorsRender_data_t sensorsData[SENSOR_NUM];
 
-void SensorsRenderInit() {
+void RenderSensorsInit() {
   // uint8_t size = 10;
   // for (uint8_t i = 0; i < SENSOR_NUM; i++) {
   //   char *ptr = &sensorsData[i].hex[0];
@@ -71,7 +71,7 @@ static void renderStats(SDL_Renderer *renderer, int x, int y, char *text, uint8_
   SDL_DestroyTexture(texture);
 }
 
-void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
+void RenderSensors(SDL_Window *window, SDL_Renderer *renderer) {
   int32_t now = SDL_GetTicks();
   for (uint8_t i = 0; i < SENSOR_NUM; i++) {
     Sensor_t *sensor = SensorGetByNumber(i);
@@ -87,7 +87,7 @@ void SensorsRender(SDL_Window *window, SDL_Renderer *renderer) {
   }
 }
 
-void SensorRenderPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_t *sensor) {
+void RenderSensorsPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_t *sensor) {
 
     /* pointer to the first item (0 index) of the output array */
     char *ptr = &sensorsData[sensor->num].hex[0];
