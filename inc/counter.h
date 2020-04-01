@@ -4,11 +4,8 @@
 extern "C" {
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-
-void CounterRender(SDL_Window *window, SDL_Renderer *renderer);
 void CounterReset();
+void CounterUpdate(char[64]);
 
 #ifdef __cplusplus
 }

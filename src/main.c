@@ -1,14 +1,12 @@
 
 #include <stdlib.h>
-
 #include <SDL2/SDL.h>
-
+#include "udp.h"
 
 #include "render/sensors.h"
+#include "render/layout.h"
+#include "render/counter.h"
 #include "font.h"
-#include "layout.h"
-#include "counter.h"
-#include "udp.h"
 
 
 #define WINDOW_WIDTH 800
@@ -49,8 +47,8 @@ int main(int argc, char **argv) {
     if (currentTime > lastFrameTime + (1000 / 30)) {
       lastFrameTime = currentTime;
 
-      LayoutRender(window, renderer);
-      CounterRender(window, renderer);
+      RenderLayout(window, renderer);
+      RenderCounter(window, renderer);
       RenderSensors(window, renderer);
 
       SDL_RenderPresent(renderer);

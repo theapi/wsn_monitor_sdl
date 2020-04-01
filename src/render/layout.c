@@ -1,5 +1,5 @@
 
-#include "layout.h"
+#include "render/layout.h"
 #include "font.h"
 
 /*
@@ -29,7 +29,7 @@ static void prepareFrame(SDL_Renderer *renderer, int x, int y, char *text) {
   SDL_DestroyTexture(texture);
 }
 
-void LayoutRender(SDL_Window *window, SDL_Renderer *renderer) {
+void RenderLayout(SDL_Window *window, SDL_Renderer *renderer) {
   int window_width, window_height;
 
   SDL_GetWindowSize(window, &window_width, &window_height);
