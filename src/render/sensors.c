@@ -9,16 +9,6 @@
 
 static SensorsRender_data_t sensorsData[SENSOR_NUM];
 
-void RenderSensorsInit() {
-  // uint8_t size = 10;
-  // for (uint8_t i = 0; i < SENSOR_NUM; i++) {
-  //   char *ptr = &sensorsData[i].hex[0];
-  //   for (int x = 0; x < size; x++) {
-  //       ptr += sprintf(ptr, "%02X ", x);
-  //   }
-  // }
-}
-
 static void renderHex(SDL_Renderer *renderer, int x, int y, char *text, uint8_t sensor_num) {
   int text_width;
   int text_height;

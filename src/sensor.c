@@ -5,6 +5,7 @@
 #include "render/counter.h"
 #include "counter.h"
 #include "sensor.h"
+#include "sensor_config.h"
 
 static Sensor_t sensors[SENSOR_NUM] = {};
 
@@ -95,7 +96,7 @@ Sensor_t* SensorPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, unsigned
     sensors[num].last = now;
     // Reset the timer (temp as multiple sensors will have different times)
     CounterReset();
-    SDL_Log("new mesgid timestamp: %lu", now);
+    SDL_Log("new mesgid timestamp: %lu for sensor %d", now, num);
   }
 
   SensorIcons_t icons = {0};
@@ -121,3 +122,21 @@ Sensor_t* SensorGetByNumber(uint8_t num) {
 // void SensorSetVisible(uint8_t num, uint8_t visible) {
 //    sensors[num].visible = visible;
 // }
+
+void SensorInit() {
+  for (int i = 0; i < SENSOR_NUM; i++) {
+    if (sensor_config_sensors[i] && sensor_config_sensors[i][0] > 0) {
+      PAYLOAD_sensor_t payload = {0};
+      for (int x = 0; x < 6; x++) {
+        payload.mac[x] = sensor_config_sensors[i][x];
+      }
+      sensors[i].payload = payload;
+
+      // SDL_Log("sensor_config_sensors: %02X %02X %02X",
+      // sensors[i].payload.mac[0],
+      // sensor_config_sensors[i][1],
+      // sensor_config_sensors[i][2]);
+    }
+    //
+  }
+}

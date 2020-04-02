@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 void CounterReset();
-void CounterUpdate(char[64]);
+void CounterUpdate(char buf[64]);
 
 #ifdef __cplusplus
 }

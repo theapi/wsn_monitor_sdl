@@ -15,7 +15,7 @@ typedef struct {
   char stats[1024];
 } SensorsRender_data_t;
 
-void RenderSensorsInit();
+
 void RenderSensorsPopulate(uint8_t raw[SENSOR_BUFFER_SIZE], uint8_t size, Sensor_t *sensor);
 void RenderSensors(SDL_Window *window, SDL_Renderer *renderer);
 
